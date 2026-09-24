@@ -7,6 +7,7 @@ import '../../features/auth/views/otp_view.dart';
 import '../../features/auth/views/password_change_success_view.dart';
 import '../../features/auth/views/sign_view.dart';
 import '../../features/auth/views/signup_view.dart';
+import '../../features/nav/views/nav_view.dart';
 import '../../features/onboarding/views/onboarding_view.dart';
 import '../services/app_starter_services.dart';
 import 'route_names.dart';
@@ -81,6 +82,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.passwordChangeSuccess,
         name: AppRoutes.passwordChangeSuccess,
         builder: (context, state) => const PasswordChangeSuccessView(),
+      ),
+      GoRoute(
+        path: AppRoutes.mainNav,
+        name: AppRoutes.mainNavName,
+        builder: (context, state) => const MainNavView(),
       ),
     ],
   );
