@@ -9,7 +9,7 @@ class AppUrls {
   static const String signupUrl = '$_baseUrl/auth/signup';
   static const String send_otp = '$_baseUrl/auth/send-otp';
   static const String verify_otp = '$_baseUrl/auth/verify-otp';
-  static const String reset_pass = '$_baseUrl/auth/reset-password';
+  static const String resetPassword = '$_baseUrl/auth/resetPassword';
   static const String updateUser = '$_baseUrl/auth/profile';
   static const String updateUserImage = '$_baseUrl/auth/profile/image-update';
   static const String user = '$_baseUrl/auth/profile';

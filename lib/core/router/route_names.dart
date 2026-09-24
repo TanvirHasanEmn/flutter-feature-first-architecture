@@ -7,6 +7,9 @@ class AppRoutes {
   static const String signup = '/signup';
   static const String forgotpassword = '/forgotpassword';
   static const String otp = '/otp';
+  static const String forgotPassword = '/forgotPassword';
+  static const String newPassword = '/newPassword';
+  static const String passwordChangeSuccess = '/passwordChangeSuccess';
   static const String home = '/home';
   static const String mainNav = '/main-nav';
   static const String reminder = '/reminder';

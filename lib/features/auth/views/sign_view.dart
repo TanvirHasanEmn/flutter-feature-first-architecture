@@ -201,7 +201,7 @@ class _SignInViewState extends ConsumerState<SignInView> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () => context.push(AppRoutes.forgotpassword),
+                    onTap: () => context.push(AppRoutes.forgotPassword),
                     child: Text(
                       l10n.translate('Forgot Password'),
                       style: GoogleFonts.inter(

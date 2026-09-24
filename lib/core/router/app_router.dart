@@ -1,7 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/auth/views/forgot_password_view.dart';
+import '../../features/auth/views/new_password_view.dart';
 import '../../features/auth/views/otp_view.dart';
+import '../../features/auth/views/password_change_success_view.dart';
 import '../../features/auth/views/sign_view.dart';
 import '../../features/auth/views/signup_view.dart';
 import '../../features/onboarding/views/onboarding_view.dart';
@@ -63,6 +66,21 @@ final routerProvider = Provider<GoRouter>((ref) {
           final email = state.extra as String? ?? '';
           return OtpView(email: email);
         },
+      ),
+      GoRoute(
+        path: AppRoutes.forgotPassword,
+        name: AppRoutes.forgotPassword,
+        builder: (context, state) => const ResetPasswordView(),
+      ),
+      GoRoute(
+        path: AppRoutes.newPassword,
+        name: AppRoutes.newPassword,
+        builder: (context, state) => const NewPasswordView(),
+      ),
+      GoRoute(
+        path: AppRoutes.passwordChangeSuccess,
+        name: AppRoutes.passwordChangeSuccess,
+        builder: (context, state) => const PasswordChangeSuccessView(),
       ),
     ],
   );
