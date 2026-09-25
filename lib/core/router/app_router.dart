@@ -7,6 +7,14 @@ import '../../features/auth/views/otp_view.dart';
 import '../../features/auth/views/password_change_success_view.dart';
 import '../../features/auth/views/sign_view.dart';
 import '../../features/auth/views/signup_view.dart';
+import '../../features/home/models/payment_booking_args.dart';
+import '../../features/home/models/service_item_model.dart';
+import '../../features/home/views/checkout.dart';
+import '../../features/home/views/date_booking.dart';
+import '../../features/home/views/notification.dart';
+import '../../features/home/views/payment_method.dart';
+import '../../features/home/views/services.dart';
+import '../../features/message/views/chat_page.dart';
 import '../../features/nav/views/nav_view.dart';
 import '../../features/onboarding/views/onboarding_view.dart';
 import '../services/app_starter_services.dart';
@@ -87,6 +95,59 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.mainNav,
         name: AppRoutes.mainNavName,
         builder: (context, state) => const MainNavView(),
+      ),
+      GoRoute(
+        path: AppRoutes.dateBooking,
+        name: AppRoutes.dateBooking,
+        builder: (context, state) {
+          final service = state.extra as ServiceItem;
+          return DateBookingView(service: service);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.checkout,
+        name: AppRoutes.checkout,
+        builder: (context, state) {
+          final params = state.extra as Map<String, dynamic>;
+          return CheckoutView(
+            service: params['service'] as ServiceItem,
+            selectedDate: params['date'] as DateTime,
+            selectedTime: params['time'] as String,
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.notification,
+        name: AppRoutes.notification,
+        builder: (context, state) => const NotificationView(),
+      ),
+      GoRoute(
+        path: AppRoutes.services,
+        name: AppRoutes.services,
+        builder: (context, state) => const ServicesView(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.paymentMethod,
+        name: AppRoutes.paymentMethod,
+        builder: (context, state) {
+          final args = state.extra as PaymentBookingArgs;
+          return PaymentMethodView(args: args);
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.chatRoom,
+        name: AppRoutes.chatRoom,
+        builder: (context, state) {
+          final params = state.extra as Map<String, dynamic>;
+          return ChatPage(
+            userId: params['userId'] as String,
+            userName: params['userName'] as String? ?? 'Messages',
+            userImage: params['userImage'] as String? ?? '',
+          );
+        },
       ),
     ],
   );

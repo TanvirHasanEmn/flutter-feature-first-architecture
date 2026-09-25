@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import '../theme/app_colors.dart';
 
@@ -32,15 +30,15 @@ class CustomButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: color ??AppColors.primary,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30.r),
+            borderRadius: BorderRadius.circular(30),
           ),
-          minimumSize: Size(width ?? 335.w, height ?? 48.h),
+          minimumSize: Size(width ?? 335, height ?? 48),
         ),
         child: Text(
           text,
           style: TextStyle(
             fontFamily: 'gotham_regular',
-            fontSize: 16.sp,
+            fontSize: 16,
             fontWeight: FontWeight.w600,
             color: Color(0xFF000000),
           ),
