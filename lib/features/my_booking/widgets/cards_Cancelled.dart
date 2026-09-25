@@ -1,98 +1,114 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/custom_widgets/custom_button_small.dart';
-import '../../../../core/language/language_controller.dart';
-import '../../../../core/utils/app_colors.dart';
-import '../../nav/views/nav_bar.dart';
+
+import '../../../core/localization/app_localizations.dart';
+import '../../../core/router/route_names.dart';
+import '../../../core/theme/app_colors.dart';
 
 class CancelledCard extends StatelessWidget {
-  final String image, title, date, price, cancelled_date, reason;
-  final lang = Get.find<LocalizationController>();
+  final String image;
+  final String title;
+  final String date;
+  final String price;
+  final String cancelledDate;
+  final String reason;
 
-  CancelledCard({
+  const CancelledCard({
     super.key,
     required this.image,
     required this.title,
     required this.date,
     required this.price,
-    required this.cancelled_date,
+    required this.cancelledDate,
     required this.reason,
   });
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Container(
-      height: 280.h,
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 22.h),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
       decoration: BoxDecoration(
-        color: AppColor.white,
-        borderRadius: BorderRadius.circular(22.r),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Container(
-                width: 109.w,
-                height: 109.h,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(12.r),
-                    bottomLeft: Radius.circular(12.r),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: SizedBox(
+                  width: 90,
+                  height: 90,
+                  child: image.isNotEmpty
+                      ? Image.network(
+                    image,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      color: Colors.grey.shade200,
+                      child: const Icon(Icons.broken_image, color: Colors.grey),
+                    ),
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Container(
+                        color: Colors.grey.shade100,
+                        child: const Center(
+                          child: SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary),
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                      : Container(
+                    color: Colors.grey.shade200,
+                    child: const Icon(Icons.image_not_supported, color: Colors.grey),
                   ),
-                  color: Colors.grey[200],
-                ),
-                child: Image.network(
-                  image,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Center(
-                    child: Icon(Icons.image_not_supported, size: 40.sp),
-                  ),
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Center(
-                      child: SpinKitCircle(
-                       color: AppColor.primaryColor,
-                        size: 60,
-                      ),
-                    );
-                  },
                 ),
               ),
-              SizedBox(width: 12.w),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.bold,
-                        color: AppColor.fontBlack,
+                      style: GoogleFonts.inter(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black87,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    SizedBox(height: 8.h),
+                    const SizedBox(height: 6),
                     Text(
                       date,
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: AppColor.fontBlack,
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        color: const Color(0xFF718096),
                       ),
                     ),
-                    SizedBox(height: 8.h),
+                    const SizedBox(height: 6),
                     Text(
                       price,
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w500,
-                        color: AppColor.primaryColor,
+                      style: GoogleFonts.inter(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primary,
                       ),
                     ),
                   ],
@@ -100,33 +116,40 @@ class CancelledCard extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 12.h),
-          Divider(height: 1.h, color: Color(0xFFEEEEEE)),
-          SizedBox(height: 12.h),
+          const SizedBox(height: 12),
+          const Divider(height: 1, color: Color(0xFFEEEEEE)),
+          const SizedBox(height: 12),
           Text(
-            cancelled_date,
+            cancelledDate,
             style: GoogleFonts.inter(
-              fontSize: 12.sp,
+              fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: AppColor.fontBlack,
+              color: Colors.black87,
             ),
           ),
-          SizedBox(height: 4.h),
+          const SizedBox(height: 4),
           Text(
             reason,
             style: GoogleFonts.inter(
-              fontSize: 14.sp,
+              fontSize: 13,
               fontWeight: FontWeight.w400,
-              color: AppColor.fontBlack,
+              color: const Color(0xFF718096),
             ),
           ),
-          SizedBox(height: 10.h),
-          Align(
-            alignment: Alignment.topLeft,
-            child: CustomButtonSmall(
-              color: Color(0xFF666B75),
-              text: lang.tr("cancel_service_button",),
-              onPressed: () => Get.to(() => NavBar()),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 38,
+            child: OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                foregroundColor: const Color(0xFF666B75),
+                side: const BorderSide(color: Color(0xFFCBD5E0)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              onPressed: () => context.go(AppRoutes.mainNav),
+              child: Text(
+                l10n.translate('cancel_service_button'),
+                style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500),
+              ),
             ),
           ),
         ],

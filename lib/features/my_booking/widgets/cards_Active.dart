@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:get/get.dart';
-import '../../../../core/custom_widgets/custom_button_small.dart';
-import '../../../../core/custom_widgets/custom_button_small2.dart';
-import '../../../../core/language/language_controller.dart';
-import '../../../../core/utils/app_colors.dart';
-import '../views/cancel_service.dart';
-import '../views/complete_service.dart';
+import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import '../../../core/localization/app_localizations.dart';
+import '../../../core/router/route_names.dart';
+import '../../../core/theme/app_colors.dart';
 
 class ActiveCard extends StatelessWidget {
   final String? id;
@@ -15,101 +12,105 @@ class ActiveCard extends StatelessWidget {
   final String? title;
   final String? date;
   final String? price;
-  final lang = Get.find<LocalizationController>();
 
-  ActiveCard({super.key,
+  const ActiveCard({
+    super.key,
     this.id,
     this.image,
     this.title,
     this.date,
     this.price,
-  }) {
-    // Debug print to identify null values
-    // debugPrint('ActiveCard created with:');
-    // debugPrint('Image: $image');
-    // debugPrint('Title: $title');
-    // debugPrint('Date: $date');
-    // debugPrint('Price: $price');
-  }
+  });
 
   @override
   Widget build(BuildContext context) {
-    // Fallback values
-    final safeImage = image ?? 'https://via.placeholder.com/150';
-    final safeTitle = title ?? 'Service Title Not Available';
-    final safeDate = date ?? 'Date Not Specified';
-    final safePrice = price ?? '\$0';
+    final l10n = AppLocalizations.of(context);
+    final safeImage = (image != null && image!.isNotEmpty) ? image! : '';
+    final safeTitle = (title != null && title!.isNotEmpty) ? title! : 'Service Title Not Available';
+    final safeDate = (date != null && date!.isNotEmpty) ? date! : 'Date Not Specified';
+    final safePrice = (price != null && price!.isNotEmpty) ? price! : '\$0';
 
     return Container(
-      height: 231.h,
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 22.h),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
       decoration: BoxDecoration(
-        color: AppColor.white,
-        borderRadius: BorderRadius.circular(22.r),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Container(
-                width: 109.w,
-                height: 109.h,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(12.r),
-                      bottomLeft: Radius.circular(12.r)),
-                  color: Colors.grey[200],
-                ),
-                child: Image.network(
-                  safeImage,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Center(
-                    child: Icon(Icons.image_not_supported, size: 40.sp),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: SizedBox(
+                  width: 90,
+                  height: 90,
+                  child: safeImage.isNotEmpty
+                      ? Image.network(
+                    safeImage,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      color: Colors.grey.shade200,
+                      child: const Icon(Icons.broken_image, color: Colors.grey),
+                    ),
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Container(
+                        color: Colors.grey.shade100,
+                        child: const Center(
+                          child: SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary),
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                      : Container(
+                    color: Colors.grey.shade200,
+                    child: const Icon(Icons.image_not_supported, color: Colors.grey),
                   ),
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Center(
-                      child: SpinKitCircle(
-                        size: 60,
-                        color: AppColor.primaryColor,
-                      ),
-                    );
-                  },
                 ),
               ),
-              SizedBox(width: 12.w),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       safeTitle,
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        color: AppColor.fontBlack,
-                        fontWeight: FontWeight.bold,
+                      style: GoogleFonts.inter(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black87,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    SizedBox(height: 8.h),
+                    const SizedBox(height: 6),
                     Text(
                       safeDate,
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: AppColor.fontBlack,
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        color: const Color(0xFF718096),
                       ),
                     ),
-                    SizedBox(height: 8.h),
+                    const SizedBox(height: 6),
                     Text(
                       safePrice,
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w500,
-                        color: AppColor.primaryColor,
+                      style: GoogleFonts.inter(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primary,
                       ),
                     ),
                   ],
@@ -117,46 +118,51 @@ class ActiveCard extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 15.h),
-          Divider(height: 1.h, color: Color(0xFFEEEEEE)),
-          SizedBox(height: 15.h),
+          const SizedBox(height: 14),
+          const Divider(height: 1, color: Color(0xFFEEEEEE)),
+          const SizedBox(height: 14),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: CustomButtonSmall2(
-                  text: lang.tr("cancel_service_button") ?? 'Cancel Service',
+              Expanded(
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFFE53E3E),
+                    side: const BorderSide(color: Color(0xFFE53E3E)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                  ),
                   onPressed: () {
-                    if (id != null) {
-                      Get.to(() => CancelServicePage(bookingId: id!));
-                    } else {
-                      debugPrint('❌ Booking ID is null');
+                    if (id != null && id!.isNotEmpty) {
+                      context.push(AppRoutes.cancelBooking, extra: id);
                     }
                   },
-
+                  child: Text(
+                    l10n.translate('cancel_service_button'),
+                    style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600),
+                  ),
                 ),
               ),
-
-
-              Align(
-                alignment: Alignment.centerRight,
-                child: CustomButtonSmall(
-                  text: lang.tr("complete_service_button") ?? 'Cancel Service',
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                  ),
                   onPressed: () {
-                    if (id != null) {
-                      Get.to(() => CompleteServicePage(bookingId: id!));
-                    } else {
-                      debugPrint('❌ Booking ID is null');
+                    if (id != null && id!.isNotEmpty) {
+                      context.push(AppRoutes.cancelBooking, extra: id);
                     }
                   },
-
+                  child: Text(
+                    l10n.translate('complete_service_button'),
+                    style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white),
+                  ),
                 ),
               ),
             ],
           ),
-
-
         ],
       ),
     );

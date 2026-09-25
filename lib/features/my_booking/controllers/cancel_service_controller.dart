@@ -1,88 +1,97 @@
-import 'package:get/get.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../../core/language/language.dart';
-import '../../../../core/language/language_controller.dart';
-import '../../../../core/network_caller/service/service2.dart';
-import '../../../../core/network_caller/utils/utils.dart';
+import '../../../core/network/api_client.dart';
 
-class CancelServiceController extends GetxController {
-  RxString selectedReason = ''.obs;
-  TextEditingController otherReasonController = TextEditingController();
-  final String bookingId; // 👈 holds the booking ID
+class CancelServiceState {
+  final String selectedReason;
+  final bool isLoading;
+  final String? errorMessage;
+  final List<String> reasons;
 
-  CancelServiceController({required this.bookingId}); // 👈 constructor injection
+  const CancelServiceState({
+    this.selectedReason = '',
+    this.isLoading = false,
+    this.errorMessage,
+    this.reasons = const [
+      'Esperando por mucho tiempo',
+      'No se pudo contactar al proveedor de servicio',
+      'El proveedor denegó el destino',
+      'El proveedor denegó la recogida',
+      'Dirección mostrada incorrecta',
+      'Precio no razonable',
+      'Pedir otro servicio',
+      'Solo quiero cancelar',
+    ],
+  });
 
-  late LocalizationController lang;
-  late List<String> reasons;
-
-  @override
-  void onInit() {
-    super.onInit();
-    lang = Get.find<LocalizationController>();
-
-    reasons = [
-      lang.tr("waiting_for_long_time"),
-      lang.tr("unable_to_contact_service_provider"),
-      lang.tr("provider_denied_destination"),
-      lang.tr("provider_denied_pickup"),
-      lang.tr("wrong_address_shown"),
-      lang.tr("price_not_reasonable"),
-      lang.tr("order_another_service"),
-      lang.tr("just_want_to_cancel"),
-    ];
-  }
-
-  void selectReason(String reason) {
-    selectedReason.value = reason;
-  }
-
-  void sendCancellation() async {
-    final String reasonToSend = selectedReason.value == 'Others'
-        ? otherReasonController.text.trim()
-        : selectedReason.value;
-
-    if (reasonToSend.isEmpty) {
-      Get.snackbar('Error', lang.tr('please_select_or_enter_reason'));
-      return;
-    }
-
-    debugPrint('Selected reason++++++++++++++++++++++++++++++++++++++++++++++++: $reasonToSend');
-    debugPrint('📦 Booking ID passed to controller: $bookingId');
-
-    try {
-      final response = await NetworkCalller().postRequest(
-        '${AppUrls.baseUrl5}/booking/cancel-booking/$bookingId',
-        body: {"cancelReason": reasonToSend},
-      );
-
-      if (response.isSuccess) {
-        Get.snackbar(
-          'Success',
-          'Booking cancelled successfully',
-          snackPosition: SnackPosition.BOTTOM,
-        );
-        Get.back();
-      } else {
-        Get.snackbar(
-          'Error',
-          response.errorMessage ?? 'Cancellation failed',
-          snackPosition: SnackPosition.BOTTOM,
-        );
-      }
-    } catch (e) {
-      debugPrint('❌ Exception during cancellation: $e');
-      Get.snackbar(
-        'Error',
-        'Something went wrong',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    }
-  }
-
-  @override
-  void onClose() {
-    otherReasonController.dispose();
-    super.onClose();
+  CancelServiceState copyWith({
+    String? selectedReason,
+    bool? isLoading,
+    String? errorMessage,
+  }) {
+    return CancelServiceState(
+      selectedReason: selectedReason ?? this.selectedReason,
+      isLoading: isLoading ?? this.isLoading,
+      errorMessage: errorMessage,
+      reasons: reasons,
+    );
   }
 }
+
+class CancelServiceController extends Notifier<CancelServiceState> {
+  @override
+  CancelServiceState build() => const CancelServiceState();
+
+  void selectReason(String reason) {
+    state = state.copyWith(selectedReason: reason);
+  }
+
+  Future<String?> submitCancellation({
+    required String bookingId,
+    required String customReason,
+  }) async {
+    final finalReason = state.selectedReason == 'Others'
+        ? customReason.trim()
+        : state.selectedReason;
+
+    if (finalReason.isEmpty) {
+      return 'Por favor selecciona o escribe un motivo';
+    }
+
+    state = state.copyWith(isLoading: true, errorMessage: null);
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('accessToken') ?? '';
+
+      final network = NetworkCaller();
+      final response = await network.postRequest(
+        'https://api.manospro.app/api/v1/booking/cancel-booking/$bookingId',
+        body: {'cancelReason': finalReason},
+        token: token,
+      );
+
+      state = state.copyWith(isLoading: false);
+
+      if (response.isSuccess) {
+        return null; // Success
+      } else {
+        final err = response.errorMessage.isNotEmpty
+            ? response.errorMessage
+            : 'Error al cancelar la reserva';
+        state = state.copyWith(errorMessage: err);
+        return err;
+      }
+    } catch (e) {
+      final err = 'Excepción al cancelar: $e';
+      state = state.copyWith(isLoading: false, errorMessage: err);
+      return err;
+    }
+  }
+}
+
+final cancelServiceControllerProvider =
+NotifierProvider<CancelServiceController, CancelServiceState>(
+  CancelServiceController.new,
+);

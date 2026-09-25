@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:get/get.dart';
-import '../../../../core/custom_widgets/custom_button_small.dart';
-import '../../../../core/custom_widgets/custom_button_small2.dart';
-import '../../../../core/language/language_controller.dart';
-import '../../../../core/utils/app_colors.dart';
-import '../../nav/views/nav_bar.dart';
-import '../views/leave_review.dart';
+import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import '../../../core/localization/app_localizations.dart';
+import '../../../core/router/route_names.dart';
+import '../../../core/theme/app_colors.dart';
 
 class CompletedCard extends StatelessWidget {
-  final String image, title, date, price,serviceId;
-  final lang = Get.find<LocalizationController>();
-   CompletedCard({super.key,
+  final String image;
+  final String title;
+  final String date;
+  final String price;
+  final String serviceId;
+
+  const CompletedCard({
+    super.key,
     required this.image,
     required this.title,
     required this.date,
@@ -22,108 +24,135 @@ class CompletedCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Container(
-      height: 231.h,
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 22.h),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
       decoration: BoxDecoration(
-        color: AppColor.white,
-        borderRadius: BorderRadius.circular(22.r),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Container(
-                width: 100.w,
-                height: 100.h,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(12.r),
-                    bottomLeft: Radius.circular(12.r),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: SizedBox(
+                  width: 90,
+                  height: 90,
+                  child: image.isNotEmpty
+                      ? Image.network(
+                    image,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      color: Colors.grey.shade200,
+                      child: const Icon(Icons.broken_image, color: Colors.grey),
+                    ),
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Container(
+                        color: Colors.grey.shade100,
+                        child: const Center(
+                          child: SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary),
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                      : Container(
+                    color: Colors.grey.shade200,
+                    child: const Icon(Icons.image_not_supported, color: Colors.grey),
                   ),
-                  color: Colors.grey[200],
-                ),
-                child: Image.network(
-                  image,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Center(
-                    child: Icon(Icons.image_not_supported, size: 40.sp),
-                  ),
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Center(
-                      child: SpinKitCircle(
-                        size: 60,
-                        color: AppColor.primaryColor,
-                      ),
-                    );
-                  },
                 ),
               ),
-              SizedBox(width: 12.w),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 13.sp,
-                      fontWeight: FontWeight.bold,
-                      color: AppColor.fontBlack,
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: GoogleFonts.inter(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black87,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  SizedBox(height: 8.h),
-                  Text(
-                    date,
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: AppColor.fontBlack,
+                    const SizedBox(height: 6),
+                    Text(
+                      date,
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        color: const Color(0xFF718096),
+                      ),
                     ),
-                  ),
-
-                  SizedBox(height: 8.h),
-                  Text(
-                    price,
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w500,
-                      color: AppColor.primaryColor,
+                    const SizedBox(height: 6),
+                    Text(
+                      price,
+                      style: GoogleFonts.inter(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primary,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
-         SizedBox(height: 15.h,),
-          Container(height: 1.h, width: double.maxFinite, color: Color(0xFFEEEEEE),),
-          SizedBox(height: 15.h,),
-          Padding(
-            padding: const EdgeInsets.only(left: 2, right: 2 ),
-            child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CustomButtonSmall2(
-                  text: lang.tr("leave_review_button"),
-                  onPressed: () => Get.to(() => LeaveReviewPage(serviceId: serviceId)), // 👈 this now works
+          const SizedBox(height: 14),
+          const Divider(height: 1, color: Color(0xFFEEEEEE)),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.primary,
+                    side: const BorderSide(color: AppColors.primary),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                  ),
+                  onPressed: () {
+                    context.push(AppRoutes.leaveReview, extra: serviceId);
+                  },
+                  child: Text(
+                    l10n.translate('leave_review_button'),
+                    style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600),
+                  ),
                 ),
-
-
-                CustomButtonSmall(
-                  text: lang.tr("book_again_button"),
-                  onPressed: () => Get.to(() => NavBar()),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                  ),
+                  onPressed: () => context.go(AppRoutes.mainNav),
+                  child: Text(
+                    l10n.translate('book_again_button'),
+                    style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white),
+                  ),
                 ),
-               //SizedBox(width: 165.w,),
-
-              ],
-            ),
+              ),
+            ],
           ),
-
-
         ],
       ),
     );
