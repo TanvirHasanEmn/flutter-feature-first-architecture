@@ -54,7 +54,7 @@ class _ResetPasswordViewState extends ConsumerState<ResetPasswordView> {
           backgroundColor: Colors.green,
         ),
       );
-      // Navigate to OTP reset screen passing the email
+      // Navigate to OTP reset views passing the email
       context.push(
         AppRoutes.otp,
         extra: email.trim().toLowerCase(),
