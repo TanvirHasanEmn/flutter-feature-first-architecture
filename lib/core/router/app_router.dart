@@ -15,8 +15,14 @@ import '../../features/home/views/notification.dart';
 import '../../features/home/views/payment_method.dart';
 import '../../features/home/views/services.dart';
 import '../../features/message/views/chat_page.dart';
+import '../../features/my_booking/views/cancel_service.dart';
+import '../../features/my_booking/views/leave_review.dart';
 import '../../features/nav/views/nav_view.dart';
 import '../../features/onboarding/views/onboarding_view.dart';
+import '../../features/profile/views/edit_profile.dart';
+import '../../features/profile/views/faq_page.dart';
+import '../../features/profile/views/privacy.dart';
+import '../../features/profile/views/subscription_details.dart';
 import '../services/app_starter_services.dart';
 import 'route_names.dart';
 
@@ -147,6 +153,48 @@ final routerProvider = Provider<GoRouter>((ref) {
             userName: params['userName'] as String? ?? 'Messages',
             userImage: params['userImage'] as String? ?? '',
           );
+        },
+      ),
+
+
+      GoRoute(
+        path: AppRoutes.cancelBooking,
+        name: AppRoutes.cancelBooking,
+        builder: (context, state) {
+          final bookingId = state.extra as String? ?? '';
+          return CancelServiceView(bookingId: bookingId);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.leaveReview,
+        name: AppRoutes.leaveReview,
+        builder: (context, state) {
+          final serviceId = state.extra as String? ?? '';
+          return LeaveReviewView(serviceId: serviceId);
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.editProfile,
+        name: AppRoutes.editProfile,
+        builder: (context, state) => const EditProfileView(),
+      ),
+      GoRoute(
+        path: AppRoutes.faq,
+        name: AppRoutes.faq,
+        builder: (context, state) => const FaqView(),
+      ),
+      GoRoute(
+        path: AppRoutes.privacy,
+        name: AppRoutes.privacy,
+        builder: (context, state) => const PrivacyPolicyView(),
+      ),
+      GoRoute(
+        path: AppRoutes.subscriptionDetails,
+        name: AppRoutes.subscriptionDetails,
+        builder: (context, state) {
+          final data = state.extra as Map<String, dynamic>? ?? {};
+          return SubscriptionDetailsView(subscriptionData: data);
         },
       ),
     ],
