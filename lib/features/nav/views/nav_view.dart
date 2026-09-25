@@ -1,24 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../home/views/home.dart';
+import '../../message/views/all_message_view.dart';
+import '../../my_booking/views/my_booking.dart';
+import '../../profile/views/users_profile.dart';
 import '../controller/nav_controller.dart';
 
-
-// Placeholder / Destination feature views:
-// In your project, import the actual views:
-// import '../../home/views/home_view.dart';
-// import '../../bookings/views/my_booking_view.dart';
-// import '../../chat/views/all_messages_view.dart';
-// import '../../profile/views/user_profile_view.dart';
 
 class MainNavView extends ConsumerWidget {
   const MainNavView({super.key});
 
   static const List<Widget> _screens = [
-    Center(child: Text('Home View')),
-    Center(child: Text('Bookings View')),
-    Center(child: Text('Messages View')),
-    Center(child: Text('Profile View')),
+    HomeView(),
+    MyBookingView(),
+    AllMessagesView(),
+    ProfileView(),
   ];
 
   @override
